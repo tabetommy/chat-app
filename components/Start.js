@@ -3,6 +3,7 @@ import { View,Button, StyleSheet, TextInput,Image,
         Text,ImageBackground,TouchableOpacity} from 'react-native';
 import bckImg from '../assets/Background-Image.png';
 import userImg from '../assets/user.png';
+// #B9C6AE
 
 export default class Start extends React.Component {
   constructor(props){
@@ -142,35 +143,35 @@ const styles = StyleSheet.create({
     marginTop:10
   },
   color1:{
-    width:55,
-    height:55,
+    width:45,
+    height:45,
     backgroundColor:'#090C08',
     borderRadius: '50%',
-    marginRight:30
+    marginRight:20
   },
   color2:{
-    width:55,
-    height:55,
+    width:45,
+    height:45,
     height:'100%',
     backgroundColor:'#474056',
     borderRadius: '50%',
-    marginRight:30
+    marginRight:20
     
   },
   color3:{
-    width:55,
-    height:55,
+    width:45,
+    height:45,
     backgroundColor:'#8A95A5',
     borderRadius: '50%',
-    marginRight:30
+    marginRight:20
     
   },
   color4:{
-    width:55,
-    height:55,
+    width:45,
+    height:45,
     backgroundColor:'#B9C6AE',
     borderRadius: '50%',
-    marginRight:30
+    marginRight:20
     
   },
   btn1:{
