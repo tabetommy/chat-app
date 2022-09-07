@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     flex:1,
     fontSize:16, 
     fontWeight:300,
-    color:'#75708360',
+    color:'#757083',
     
   },
   colors:{
