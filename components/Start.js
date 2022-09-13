@@ -3,6 +3,7 @@ import { View,Button, StyleSheet, TextInput,Image,
         Text,ImageBackground,TouchableOpacity} from 'react-native';
 import bckImg from '../assets/Background-Image.png';
 import userImg from '../assets/user.png';
+
 // #B9C6AE
 
 export default class Start extends React.Component {
