@@ -5,6 +5,8 @@ import bckImg from '../assets/Background-Image.png';
 import userImg from '../assets/user.png';
 // #B9C6AE
 
+// #B9C6AE
+
 export default class Start extends React.Component {
   constructor(props){
     super(props);
