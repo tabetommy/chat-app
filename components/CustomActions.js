@@ -26,6 +26,27 @@ class CustomActions extends React.Component {
     }
   };
   
+//   Let the user take a photo with device's camera
+  takePhoto = async () => {
+    const { status } = await Permissions.askAsync(
+      Permissions.CAMERA,
+      Permissions.CAMERA_ROLL
+    );
+    try {
+      if (status === "granted") {
+        const result = await ImagePicker.launchCameraAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        }).catch((error) => console.log(error));
+
+        if (!result.cancelled) {
+          const imageUrl = await this.uploadImageFetch(result.uri);
+          this.props.onSend({ image: imageUrl });
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 /*Upload images to firebase*/
  uploadImageFetch = async (uri) => {
     const blob = await new Promise((resolve, reject) => {
