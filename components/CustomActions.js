@@ -1,9 +1,59 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { connectActionSheet } from "@expo/react-native-action-sheet";
 
 class CustomActions extends React.Component {
+
+//  Let the user pick an image from the device's image library
+ imagePicker = async () => {
+    // expo permission
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    try {
+      if (status === "granted") {
+        // pick image
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images, // only images are allowed
+        }).catch((error) => console.log(error));
+        // canceled process
+        if (!result.cancelled) {
+          const imageUrl = await this.uploadImageFetch(result.uri);
+          this.props.onSend({ image: imageUrl });
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
   
+/*Upload images to firebase*/
+ uploadImageFetch = async (uri) => {
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function (e) {
+        console.log(e);
+        reject(new TypeError("Network request failed"));
+      };
+      xhr.responseType = "blob";
+      xhr.open("GET", uri, true);
+      xhr.send(null);
+    });
+
+    const imageNameBefore = uri.split("/");
+    const imageName = imageNameBefore[imageNameBefore.length - 1];
+
+    const ref = firebase.storage().ref().child(`images/${imageName}`);
+
+    const snapshot = await ref.put(blob);
+
+    blob.close();
+
+    return await snapshot.ref.getDownloadURL();
+  };
+
   // ACTION SHEET 
   onActionPress = () => {
     const options = [
@@ -13,7 +63,7 @@ class CustomActions extends React.Component {
       "Cancel",
     ];
     const cancelButtonIndex = options.length - 1;
-    this.context.actionSheet().showActionSheetWithOptions(
+    this.props.showActionSheetWithOptions(
       {
         options,
         cancelButtonIndex,
@@ -74,8 +124,9 @@ const styles = StyleSheet.create({
   },
 });
 
-CustomActions.contextTypes = {
-  actionSheet: PropTypes.func,
-};
 
-export default CustomActions;
+CustomActions.contextTypes = {
+    actionSheet: PropTypes.func,
+   };
+
+export default connectActionSheet(CustomActions);
