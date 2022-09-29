@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
   },
   appName:{
     fontSize:45,
-    fontWeight:600,
+    // fontWeight:600,
     color:'#ffffff',
     marginTop:60
   },
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   name:{
     flex:1,
     fontSize:16, 
-    fontWeight:300,
+    // fontWeight:300,
     color:'#757083',
     
   },
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   chooseColor:{
     flex:0.3,
     fontSize:16, 
-    fontWeight:600,
+    // fontWeight:600,
     color:'#75708380',
     width: '100%',
   },
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   },
   btn2:{
     fontSize:20,
-    fontWeight:600,
+    // fontWeight:600,
     color:'#FFFFFF',
   }
 });
