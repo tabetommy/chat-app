@@ -16,6 +16,12 @@ export default class Chat extends React.Component{
 	    this.state = {
 	      messages: [],
 	      uid: 0,
+		  user: {
+			_id: "",
+			name: "",
+			avatar: "",
+		  },
+		  image:null,
 		  isConnected:false,
 	    }
 
@@ -79,7 +85,11 @@ export default class Chat extends React.Component{
 			_id:data._id,
 			text: data.text,
 			createdAt:data.createdAt.toDate(),
-			user:data.user,
+			user: {
+				_id: data.user._id,
+				name: data.user.name,
+				avatar: data.user.avatar || '',
+			  },
 			image: data.image || null,
         	location: data.location || null
 		  });
@@ -103,6 +113,11 @@ export default class Chat extends React.Component{
 					this.setState({
 					uid: user.uid,
 					messages: [],
+					user: {
+						_id: user.uid,
+						name: name,
+						avatar: 'https://placeimg.com/140/140/any'
+					  }
 					});
 					this.unsubscribe = this.referenceChatMessages
 					.orderBy("createdAt", "desc")
@@ -218,6 +233,8 @@ export default class Chat extends React.Component{
 				  renderCustomView={this.renderCustomView}
 				  user={{
 				    _id: this.state.uid,
+					name: this.state.user.name,
+            		avatar: this.state.user.avatar,
 				  }}
 				/>
 			{/* correct android not showing input field*/}
