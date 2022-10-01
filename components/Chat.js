@@ -7,7 +7,7 @@ import "firebase/compat/firestore";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import CustomActions from './CustomActions';
-// import MapView from "react-native-maps";
+import MapView from "react-native-maps";
 
 
 export default class Chat extends React.Component{
@@ -194,10 +194,12 @@ export default class Chat extends React.Component{
 	  }
 
 
-	// componentWillUnmount() {
-	// 	// this.authUnsubscribe();
-	// 	this.unsubscribe();
-	// 	}
+	  componentWillUnmount() {
+		if (this.isConnected) {
+		  this.unsubscribe();
+		  this.authUnsubscribe();
+		}
+	  }
 
 	render(){
 		return(
@@ -210,6 +212,7 @@ export default class Chat extends React.Component{
 		        <GiftedChat
 				  renderBubble={this.renderBubble}
 				  messages={this.state.messages}
+				  onSend={messages => this.onSend(messages)}
 				  renderInputToolbar={this.renderInputToolbar.bind(this)}
 				  renderActions={this.renderCustomActions}
 				  renderCustomView={this.renderCustomView}

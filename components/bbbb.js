@@ -181,29 +181,7 @@ CustomActions.contextTypes = {
 
 export default connectActionSheet(CustomActions);
 
- // get the location of the user by using GPS
- getLocation = async () => {
-  const { status } = await Location.requestForegroundPermissionsAsync();
-  try {
-    if (status === "granted") {
-      let result = await Location.getCurrentPositionAsync({})
-      const longitude = JSON.stringify(result.coords.longitude);
-      const latitude = JSON.stringify(result.coords.latitude);
-
-      if (result) {
-        this.props.onSend({
-          location: {
-            longitude: result.coords.longitude,
-            latitude: result.coords.latitude,
-          },
-        });
-      }
-    }
-  } catch (error) {
-    console.log(error.message);
-  }
-};
-
+ 
 // uploads images to firebase's firestore
 uploadImageFetch = async (uri) => {
   const blob = await new Promise((resolve, reject) => {

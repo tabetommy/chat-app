@@ -3,12 +3,15 @@ import PropTypes from "prop-types";
 import { connectActionSheet } from "@expo/react-native-action-sheet";
 import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
-
+import * as Location from "expo-location";
+import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
-import "firebase/compat/firestore";
+import 'firebase/compat/storage'; 
 import { TouchableOpacity, View, StyleSheet, Text } from "react-native";
 
 class CustomActions extends React.Component {
+
+
   // allows the user to select an existing image from their device’s media library
   selectImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -17,7 +20,6 @@ class CustomActions extends React.Component {
         let result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
         }).catch((error) => console.log(error));
-        console.log(result)
         if (!result.cancelled) {
           const imageUrl = await this.uploadImageFetch(result.uri);
           this.props.onSend({ image: imageUrl });
@@ -36,7 +38,6 @@ class CustomActions extends React.Component {
         let result = await ImagePicker.launchCameraAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
         }).catch((error) => console.log(error));
-        console.log(result)
         if (!result.cancelled) {
           const imageUrl = await this.uploadImageFetch(result.uri);
           this.props.onSend({ image: imageUrl });
@@ -47,6 +48,69 @@ class CustomActions extends React.Component {
     }
   };
 
+  
+// get the location of the user by using GPS
+getLocation = async () => {
+  const { status } = await Location.requestForegroundPermissionsAsync();
+  try {
+    if (status === "granted") {
+      let result = await Location.getCurrentPositionAsync({})
+      // const longitude = JSON.stringify(result.coords.longitude);
+      // const latitude = JSON.stringify(result.coords.latitude);
+
+      if (result) {
+        this.props.onSend({
+          location: {
+            longitude: result.coords.longitude,
+            latitude: result.coords.latitude,
+          },
+        });
+      }
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+
+
+// uploads images to firebase's firestore
+uploadImageFetch = async (uri) => {
+  const blob = await new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+      resolve(xhr.response);
+    };
+    xhr.onerror = function (e) {
+      console.log(e);
+      reject(new TypeError("Network request failed"));
+    };
+    xhr.responseType = "blob";
+    xhr.open("GET", uri, true);
+    xhr.send(null);
+  });
+
+  const imageNameBefore = uri.split("/");
+  const imageName = imageNameBefore[imageNameBefore.length - 1];
+  const firebaseConfig = {
+    apiKey: "AIzaSyAZcf4bjU9ubqrvCNUYwJ7tKyNkpG5l25E",
+    authDomain: "chatapp-84454.firebaseapp.com",
+    projectId: "chatapp-84454",
+    storageBucket: "chatapp-84454.appspot.com",
+    messagingSenderId: "203169596879",
+    appId: "1:203169596879:web:237b4cb66ece80ca4ffeba",
+    measurementId: "G-MLJMF5CCCE"
+    };
+  firebase.initializeApp(firebaseConfig);
+  const ref = firebase.storage().ref().child(`images/${imageName}`);
+
+
+  const snapshot = await ref.put(blob);
+
+  blob.close();
+
+  return await snapshot.ref.getDownloadURL();
+};
 
 
   //Action sheet
