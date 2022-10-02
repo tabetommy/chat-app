@@ -1,11 +1,13 @@
 import React from 'react';
-import {View, Text, StyleSheet, Platform, KeyboardAvoidingView} from 'react-native';
+import {View, Platform, KeyboardAvoidingView} from 'react-native';
 import { GiftedChat, Bubble,InputToolbar} from 'react-native-gifted-chat';
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import "firebase/compat/firestore";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
+import CustomActions from './CustomActions';
+import MapView from "react-native-maps";
 
 
 export default class Chat extends React.Component{
@@ -14,6 +16,13 @@ export default class Chat extends React.Component{
 	    this.state = {
 	      messages: [],
 	      uid: 0,
+		  user: {
+			_id: "",
+			name: "",
+			avatar: "",
+		  },
+		  image:null,
+		  location:null,
 		  isConnected:false,
 	    }
 
@@ -77,7 +86,13 @@ export default class Chat extends React.Component{
 			_id:data._id,
 			text: data.text,
 			createdAt:data.createdAt.toDate(),
-			user:data.user
+			user: {
+				_id: data.user._id,
+				name: data.user.name,
+				avatar: data.user.avatar || '',
+			  },
+			image: data.image || null,
+        	location: data.location || null
 		  });
 		});
 		this.setState({messages});
@@ -99,6 +114,11 @@ export default class Chat extends React.Component{
 					this.setState({
 					uid: user.uid,
 					messages: [],
+					user: {
+						_id: user.uid,
+						name: name,
+						avatar: 'https://placeimg.com/140/140/any'
+					  }
 					});
 					this.unsubscribe = this.referenceChatMessages
 					.orderBy("createdAt", "desc")
@@ -120,9 +140,11 @@ export default class Chat extends React.Component{
 		const recentMessage=this.state.messages[0];
 		this.referenceChatMessages.add({
 		  _id: recentMessage._id,
-		  text: recentMessage.text,
+		  text: recentMessage.text || "",
 		  createdAt:recentMessage.createdAt,
-		  user:recentMessage.user
+		  user:recentMessage.user,
+		  image: recentMessage.image || null,
+		  location: recentMessage.location || null
 		});
 	  }
 
@@ -162,11 +184,38 @@ export default class Chat extends React.Component{
 		}
 	}
 
+	renderCustomActions = (props) => {
+		return <CustomActions {...props} />;
+	  };
 
-	componentWillUnmount() {
-		// this.authUnsubscribe();
-		this.unsubscribe();
+
+
+	//custom map view
+	renderCustomView(props) {
+		const { currentMessage } = props;
+		if (currentMessage.location) {
+		  return (
+			<MapView
+			  style={{ width: 150, height: 100, borderRadius: 13, margin: 3 }}
+			  region={{
+				latitude: currentMessage.location.latitude,
+				longitude: currentMessage.location.longitude,
+				latitudeDelta: 0.0922,
+				longitudeDelta: 0.0421,
+			  }}
+			/>
+		  );
 		}
+		return null;
+	  }
+
+
+	  componentWillUnmount() {
+		if (this.isConnected) {
+		  this.unsubscribe();
+		  this.authUnsubscribe();
+		}
+	  }
 
 	render(){
 		return(
@@ -179,9 +228,14 @@ export default class Chat extends React.Component{
 		        <GiftedChat
 				  renderBubble={this.renderBubble}
 				  messages={this.state.messages}
+				  onSend={messages => this.onSend(messages)}
 				  renderInputToolbar={this.renderInputToolbar.bind(this)}
+				  renderActions={this.renderCustomActions}
+				  renderCustomView={this.renderCustomView}
 				  user={{
 				    _id: this.state.uid,
+					name: this.state.user.name,
+            		avatar: this.state.user.avatar,
 				  }}
 				/>
 			{/* correct android not showing input field*/}
