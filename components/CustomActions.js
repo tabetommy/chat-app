@@ -86,6 +86,30 @@ uploadImageFetch = async (uri) => {
   return await snapshot.ref.getDownloadURL();
 };
 
+//get user's location
+
+getLocation = async () => {
+  try {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status === "granted") {
+      const result = await Location.getCurrentPositionAsync(
+        {}
+      ).catch((error) => console.log(error));
+      const longitude = JSON.stringify(result.coords.longitude);
+      const latitude = JSON.stringify(result.coords.latitude);
+      if (result) {
+        this.props.onSend({
+          location: {
+            longitude: result.coords.longitude,
+            latitude: result.coords.latitude,
+          },
+        });
+      }
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
   //Action sheet
   onActionPress = () => {

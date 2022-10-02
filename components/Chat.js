@@ -22,6 +22,7 @@ export default class Chat extends React.Component{
 			avatar: "",
 		  },
 		  image:null,
+		  location:null,
 		  isConnected:false,
 	    }
 
